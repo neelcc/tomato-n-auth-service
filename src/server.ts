@@ -1,6 +1,12 @@
-console.log("Hello");
-function Welcome(name: string) {
-    console.log(name);
+function Welcome() {
+    const user = {
+        name: "Rakesh",
+    };
+    const fname = user.name;
+    console.log(fname);
+    console.log(fname);
+
+    console.log(user.name);
 }
 
-Welcome("Neel");
+Welcome();
