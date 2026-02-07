@@ -1,12 +1,17 @@
-function Welcome() {
-    const user = {
-        name: "Rakesh",
-    };
-    const fname = user.name;
-    console.log(fname);
-    console.log(fname);
+import app from "./app.js";
+import { Config } from "./config/index.js";
+import logger from "./config/logger.js";
 
-    console.log(user.name);
-}
+const startServer = () => {
+    const PORT = Config.PORT;
+    try {
+        app.listen(PORT, () => {
+            logger.info("testing");
+        });
+    } catch (error) {
+        console.log(error);
+        process.exit(1);
+    }
+};
 
-Welcome();
+startServer();

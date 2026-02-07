@@ -4,7 +4,7 @@
     "main": "server.js",
     "type": "module",
     "scripts": {
-        "dev": "node src/server.js",
+        "dev": "nodemon --exec tsx src/server.ts",
         "format:fix": "prettier . --write",
         "format:check": "prettier . --check",
         "lint:check": "eslint . ",
@@ -18,11 +18,14 @@
     "description": "The user management service",
     "devDependencies": {
         "@eslint/js": "^9.39.2",
+        "@types/express": "^5.0.6",
         "@types/node": "^25.2.1",
         "eslint": "^9.39.2",
         "husky": "^9.1.7",
         "lint-staged": "^16.2.7",
+        "nodemon": "^3.1.11",
         "prettier": "3.8.1",
+        "tsx": "^4.21.0",
         "typescript": "^5.9.3",
         "typescript-eslint": "^8.54.0"
     },
@@ -31,5 +34,11 @@
             "npm run format:fix",
             "npm run lint:fix"
         ]
+    },
+    "dependencies": {
+        "dotenv": "^17.2.4",
+        "express": "^5.2.1",
+        "http-errors": "^2.0.1",
+        "winston": "^3.19.0"
     }
 }
