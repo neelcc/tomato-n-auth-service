@@ -1,44 +1,48 @@
 {
-    "name": "auth-service",
-    "version": "1.0.0",
-    "main": "server.js",
-    "type": "module",
-    "scripts": {
-        "dev": "nodemon --exec tsx src/server.ts",
-        "format:fix": "prettier . --write",
-        "format:check": "prettier . --check",
-        "lint:check": "eslint . ",
-        "lint:fix": "eslint . --fix",
-        "test": "echo \"Error: no test specified\" && exit 1",
-        "prepare": "husky"
-    },
-    "keywords": [],
-    "author": "",
-    "license": "ISC",
-    "description": "The user management service",
-    "devDependencies": {
-        "@eslint/js": "^9.39.2",
-        "@types/express": "^5.0.6",
-        "@types/node": "^25.2.1",
-        "eslint": "^9.39.2",
-        "husky": "^9.1.7",
-        "lint-staged": "^16.2.7",
-        "nodemon": "^3.1.11",
-        "prettier": "3.8.1",
-        "tsx": "^4.21.0",
-        "typescript": "^5.9.3",
-        "typescript-eslint": "^8.54.0"
-    },
-    "lint-staged": {
-        "*.ts": [
-            "npm run format:fix",
-            "npm run lint:fix"
-        ]
-    },
-    "dependencies": {
-        "dotenv": "^17.2.4",
-        "express": "^5.2.1",
-        "http-errors": "^2.0.1",
-        "winston": "^3.19.0"
-    }
+        "name": "auth-service",
+        "version": "1.0.0",
+        "main": "server.js",
+        "type": "module",
+        "scripts": {
+                "dev": "nodemon --exec tsx src/server.ts",
+                "format:fix": "prettier . --write",
+                "format:check": "prettier . --check",
+                "lint:check": "eslint . ",
+                "lint:fix": "eslint . --fix",
+                "test": "vitest",
+                "prepare": "husky"
+        },
+        "keywords": [],
+        "author": "",
+        "license": "ISC",
+        "description": "The user management service",
+        "devDependencies": {
+                "@eslint/js": "^9.39.2",
+                "@swc/jest": "^0.2.39",
+                "@types/express": "^5.0.6",
+                "@types/node": "^25.2.1",
+                "eslint": "^9.39.2",
+                "husky": "^9.1.7",
+                "lint-staged": "^16.2.7",
+                "nodemon": "^3.1.11",
+                "prettier": "3.8.1",
+                "supertest": "^7.2.2",
+                "ts-node": "^10.9.2",
+                "tsx": "^4.21.0",
+                "typescript": "^5.9.3",
+                "typescript-eslint": "^8.54.0",
+                "vitest": "^3.2.4"
+        },
+        "lint-staged": {
+                "*.ts": [
+                        "npm run format:fix",
+                        "npm run lint:fix"
+                ]
+        },
+        "dependencies": {
+                "dotenv": "^17.2.4",
+                "express": "^5.2.1",
+                "http-errors": "^2.0.1",
+                "winston": "^3.19.0"
+        }
 }
