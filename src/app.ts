@@ -9,7 +9,7 @@ import logger from "./config/logger.js";
 const app = express();
 
 app.get("/", (req, res) => {
-    res.send("Server is working");
+    res.send("Server is workings");
 });
 
 // global error handler
