@@ -1,11 +1,25 @@
 import { config } from "dotenv";
+import path from "path";
 
-config();
+// Load environment file based on NODE_ENV
+config({
+    path: path.join(process.cwd(), `.env.${process.env.NODE_ENV || "dev"}`),
+});
 
-const { PORT } = process.env;
-const { NODE_ENV } = process.env;
+function required(value: string | undefined, name: string): string {
+    if (!value) {
+        throw new Error(`Missing required environment variable: ${name}`);
+    }
+    return value;
+}
 
 export const Config = {
-    PORT,
-    NODE_ENV,
-};
+    PORT: Number(required(process.env.PORT, "PORT")),
+    NODE_ENV: required(process.env.NODE_ENV, "NODE_ENV"),
+
+    DB_HOST: required(process.env.DB_HOST, "DB_HOST"),
+    DB_PORT: Number(required(process.env.DB_PORT, "DB_PORT")),
+    DB_USERNAME: required(process.env.DB_USERNAME, "DB_USERNAME"),
+    DB_PASSWORD: required(process.env.DB_PASSWORD, "DB_PASSWORD"),
+    DB_NAME: required(process.env.DB_NAME, "DB_NAME"),
+} as const;

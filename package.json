@@ -4,7 +4,7 @@
     "main": "server.js",
     "type": "module",
     "scripts": {
-        "dev": "nodemon --exec tsx src/server.ts",
+        "dev": "cross-env NODE_ENV=dev nodemon --exec tsx src/server.ts",
         "format:fix": "prettier . --write",
         "format:check": "prettier . --check",
         "lint:check": "eslint . ",
@@ -40,6 +40,7 @@
         ]
     },
     "dependencies": {
+        "cross-env": "^10.1.0",
         "dotenv": "^17.2.4",
         "express": "^5.2.1",
         "http-errors": "^2.0.1",
