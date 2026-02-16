@@ -19,7 +19,7 @@ export default defineConfig(
         rules: {
             "dot-notation": "error",
             "@typescript-eslint/no-unsafe-call": "off",
-            "@typescript-eslint/no-unsafe-assignment": "off"
+            "@typescript-eslint/no-unsafe-assignment": "off",
         },
     },
 );
