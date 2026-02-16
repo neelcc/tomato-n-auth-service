@@ -1,21 +1,21 @@
- 
- 
- 
+import "reflect-metadata";
 import express, {
     type NextFunction,
     type Request,
     type Response,
 } from "express";
-import "reflect-metadata";
 
 import type { HttpError } from "http-errors";
 import logger from "./config/logger.js";
+import authRouter from "./routes/auth.js";
 
 const app = express();
-
+app.use(express.json());
 app.get("/", (req, res) => {
     res.send("Server is workings");
 });
+
+app.use("/auth", authRouter);
 
 // global error handler
 // eslint-disable-next-line @typescript-eslint/no-unused-vars

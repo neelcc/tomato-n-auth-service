@@ -9,7 +9,7 @@
         // See also https://aka.ms/tsconfig/module
         "module": "nodenext",
         "target": "esnext",
-        "types": ["jest"],
+        "types": ["node","vitest"],
         // For nodejs:
         // "lib": ["esnext"],
         // "types": ["node"],
@@ -34,12 +34,13 @@
 
         // Recommended Options
         "strict": true,
+        "strictPropertyInitialization": false,
         "verbatimModuleSyntax": true,
-        "isolatedModules": true,
+        "isolatedModules": false,
         "noUncheckedSideEffectImports": true,
         "moduleDetection": "force",
         "skipLibCheck": true,
         "emitDecoratorMetadata": true,
-        "experimentalDecorators": true,
+        "experimentalDecorators": true
     }
 }
