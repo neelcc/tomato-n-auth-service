@@ -8,6 +8,7 @@ import express, {
 import type { HttpError } from "http-errors";
 import logger from "./config/logger.js";
 import authRouter from "./routes/auth.js";
+import z from "zod";
 
 const app = express();
 app.use(express.json());
@@ -21,6 +22,13 @@ app.use("/auth", authRouter);
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 app.use((err: HttpError, req: Request, res: Response, next: NextFunction) => {
     logger.error(err.message);
+
+    if (err instanceof z.ZodError) {
+        return res.status(400).json({
+            errors: z.treeifyError(err),
+        });
+    }
+
     const statusCode = err.statusCode || 500;
     res.status(statusCode).json({
         errors: [

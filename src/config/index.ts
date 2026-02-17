@@ -22,4 +22,8 @@ export const Config = {
     DB_USERNAME: required(process.env.DB_USERNAME, "DB_USERNAME"),
     DB_PASSWORD: required(process.env.DB_PASSWORD, "DB_PASSWORD"),
     DB_NAME: required(process.env.DB_NAME, "DB_NAME"),
+    REFRESH_TOKEN_SECRET: required(
+        process.env.REFRESH_TOKEN_SECRET,
+        "REFRESH_TOKEN_SECRET",
+    ),
 } as const;

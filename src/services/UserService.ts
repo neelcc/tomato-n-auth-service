@@ -19,7 +19,6 @@ export class UserService {
                 password: hashedPassword,
                 role: Role.Customer,
             });
-             
         } catch (err) {
             console.log(err);
 

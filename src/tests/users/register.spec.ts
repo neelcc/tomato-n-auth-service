@@ -6,6 +6,9 @@ import { AppDataSource } from "../../config/data-source.js";
 import app from "../../app.js";
 import { User } from "../../entity/User.js";
 import { Role } from "../../constants/index.js";
+import { isJwt } from "./utils/index.js";
+import { RefreshToken } from "../../entity/RefreshToken.js";
+// import { isJwt } from "./utils/index.js";
 
 describe("POST /auth/register", () => {
     let connection: DataSource;
@@ -82,7 +85,6 @@ describe("POST /auth/register", () => {
 
             const repository = connection.getRepository(User);
             const users = await repository.find();
-            console.log("--", users);
 
             expect(users[0]?.role).toBe(Role.Customer);
         });
@@ -104,29 +106,109 @@ describe("POST /auth/register", () => {
             expect(users[0]?.password).toHaveLength(60);
         });
 
-        it.todo(
-            "should return 400 status code if email is already exists",
-            async () => {
-                // Arange
-                const userData = {
-                    firstName: "Neelcc",
-                    lastName: "Chaurasiya",
-                    email: "neelcc@gmail.com",
-                    password: "iloveneha",
-                };
+        it("should return the access and refresh token inside a cookie ", async () => {
+            const userData = {
+                firstName: "Neelcc",
+                lastName: "Chaurasiya",
+                email: "neelcc@gmail.com",
+                password: "iloveneha",
+            };
 
-                // Act
+            const response = await request(app)
+                .post("/auth/register")
+                .send(userData);
 
-                const response = await request(app)
-                    .post("/auth/register")
-                    .send(userData);
+            let accessToken = null;
+            let refreshToken = null;
 
-                expect(response.body).toBe(400);
-            },
-        );
+            interface Headers {
+                ["set-cookie"]?: string[];
+            }
+
+            const cookies = (response.headers as Headers)["set-cookie"] || [];
+
+            cookies.forEach((cookie) => {
+                if (cookie.startsWith("accessToken=")) {
+                    accessToken = cookie.split(";")[0]?.split("=")[1];
+                }
+
+                if (cookie.startsWith("refreshToken=")) {
+                    refreshToken = cookie.split(";")[0]?.split("=")[1];
+                }
+            });
+
+            expect(accessToken).not.toBeNull();
+            expect(refreshToken).not.toBeNull();
+
+            expect(isJwt(accessToken)).toBeTruthy();
+            expect(isJwt(refreshToken)).toBeTruthy();
+        });
+
+        it("should store the refresh token in db", async () => {
+            const userData = {
+                firstName: "Neelcc",
+                lastName: "Chaurasiya",
+                email: "neelcc@gmail.com",
+                password: "iloveneha",
+            };
+
+            const response = await request(app)
+                .post("/auth/register")
+                .send(userData);
+            console.log(response.body);
+
+            const refreshTokenRepo = connection.getRepository(RefreshToken);
+            // const refreshTokens = await refreshTokenRepo.find();
+
+            // expect(refreshTokens).toHaveLength(1);
+
+            const tokens = await refreshTokenRepo
+                .createQueryBuilder("refreshToken")
+                .where("refreshToken.userId= :userId", {
+                    userId: (response.body as Record<string, string>).id,
+                })
+                .getMany();
+
+            console.log(tokens);
+
+            expect(tokens).toHaveLength(1);
+        });
+
+        // it.todo(
+        //     "should return 400 status code if email is already exists",
+        //     async () => {
+        //         // Arange
+        //         const userData = {
+        //             firstName: "Neelcc",
+        //             lastName: "Chaurasiya",
+        //             email: "neelcc@gmail.com",
+        //             password: "iloveneha",
+        //         };
+
+        //         // Act
+
+        //         const response = await request(app)
+        //             .post("/auth/register")
+        //             .send(userData);
+
+        //         expect(response.body).toBe(400);
+        //     },
+        // );
     });
 
-    // describe("Fields are missing",()=>{
+    describe("Fields are missing", () => {
+        it("should if any field is missing return 400 ", async () => {
+            const userData = {
+                firstName: "Neelcc",
+                lastName: "Chaurasiya",
+                password: "iloveneha",
+            };
 
-    //     })
+            const response = await request(app)
+                .post("/auth/register")
+                .send(userData);
+
+            expect(response.statusCode).toBe(400);
+        });
+    });
 });
