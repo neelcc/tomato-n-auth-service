@@ -1,24 +1,21 @@
-import crypto from 'crypto'
-import fs from 'fs'
-import path from 'path'
+import crypto from "crypto";
+import fs from "fs";
+import path from "path";
 
+const { publicKey, privateKey } = crypto.generateKeyPairSync("rsa", {
+    modulusLength: 2048,
+    publicKeyEncoding: {
+        type: "spki",
+        format: "pem",
+    },
 
-const {publicKey , privateKey} =  crypto.generateKeyPairSync('rsa', {
-    modulusLength : 2048 ,
-    publicKeyEncoding : {
-        type : "spki",
-        format : "pem"
-        },
-
-    privateKeyEncoding : {
+    privateKeyEncoding: {
         type: "pkcs8",
-        format : "pem"
-    }
-})
+        format: "pem",
+    },
+});
 
+const currentPath = process.cwd();
 
-
-const currentPath = process.cwd()
-
-fs.writeFileSync(`${currentPath}/src/certs/private.pem`,privateKey)
-fs.writeFileSync(`${currentPath}/src/certs/public.pem`,publicKey)
+fs.writeFileSync(`${currentPath}/src/certs/private.pem`, privateKey);
+fs.writeFileSync(`${currentPath}/src/certs/public.pem`, publicKey);

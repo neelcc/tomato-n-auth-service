@@ -8,7 +8,12 @@ export default defineConfig(
     eslint.configs.recommended,
     tseslint.configs.recommendedTypeChecked,
     {
-        ignores: ["dist/**", "node_modules/**", "eslint.config.mjs", "src/scripts/generateKeys.mjs"  ],
+        ignores: [
+            "dist/**",
+            "node_modules/**",
+            "eslint.config.mjs",
+            "src/scripts/generateKeys.mjs",
+        ],
     },
     {
         languageOptions: {
