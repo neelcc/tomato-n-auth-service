@@ -13,6 +13,7 @@ export default defineConfig(
             "node_modules/**",
             "eslint.config.mjs",
             "src/scripts/generateKeys.mjs",
+            "src/scripts/convertPemtoJwks.mjs",
         ],
     },
     {

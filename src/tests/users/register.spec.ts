@@ -8,7 +8,6 @@ import { User } from "../../entity/User.js";
 import { Role } from "../../constants/index.js";
 import { isJwt } from "./utils/index.js";
 import { RefreshToken } from "../../entity/RefreshToken.js";
-// import { isJwt } from "./utils/index.js";
 
 describe("POST /auth/register", () => {
     let connection: DataSource;
@@ -20,7 +19,7 @@ describe("POST /auth/register", () => {
     beforeEach(async () => {
         // Database Truncate
         await connection.dropDatabase();
-        await connection.synchronize();
+        await connection.synchronize(true);
     });
 
     afterAll(async () => {
@@ -100,7 +99,7 @@ describe("POST /auth/register", () => {
             await request(app).post("/auth/register").send(userData);
 
             const repository = connection.getRepository(User);
-            const users = await repository.find();
+            const users = await repository.find({ select: ["password"] });
 
             expect(users[0]?.password).not.toBe(userData.password);
             expect(users[0]?.password).toHaveLength(60);
@@ -155,7 +154,6 @@ describe("POST /auth/register", () => {
             const response = await request(app)
                 .post("/auth/register")
                 .send(userData);
-            console.log(response.body);
 
             const refreshTokenRepo = connection.getRepository(RefreshToken);
             // const refreshTokens = await refreshTokenRepo.find();
@@ -168,8 +166,6 @@ describe("POST /auth/register", () => {
                     userId: (response.body as Record<string, string>).id,
                 })
                 .getMany();
-
-            console.log(tokens);
 
             expect(tokens).toHaveLength(1);
         });

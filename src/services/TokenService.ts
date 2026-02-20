@@ -14,7 +14,7 @@ export class TokenService {
         let privateKey: Buffer;
         try {
             privateKey = fs.readFileSync(
-                path.join(__dirname, "../certs/private.pem"),
+                path.join(process.cwd(), "/certs/private.pem"),
             );
 
             // eslint-disable-next-line @typescript-eslint/no-unused-vars

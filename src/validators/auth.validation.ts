@@ -20,4 +20,15 @@ export const registerSchema = z.object({
         .transform((val) => val.trim()),
 });
 
-export type RegisterInput = z.infer<typeof registerSchema>;
+export const loginSchema = z.object({
+    email: z.string().transform((val) => val.trim().toLowerCase()),
+
+    password: z
+        .string()
+        .min(8, "Password must be at least 8 characters")
+        .max(12, "Password must be at least 12 characters")
+        .transform((val) => val.trim()),
+});
+
+// export type RegisterInput = z.infer<typeof registerSchema>;
+// export type loginInput = z.infer<typeof loginSchema>;

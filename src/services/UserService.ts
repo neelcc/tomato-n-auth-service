@@ -19,11 +19,26 @@ export class UserService {
                 password: hashedPassword,
                 role: Role.Customer,
             });
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
         } catch (err) {
-            console.log(err);
-
             const error = createHttpError(500, "Failed to store data in db");
             throw error;
         }
+    }
+
+    async findByEmail(email: string) {
+        return await this.userRepository.findOne({
+            where: {
+                email,
+            },
+        });
+    }
+
+    async findById(id: number) {
+        return await this.userRepository.findOne({
+            where: {
+                id,
+            },
+        });
     }
 }
