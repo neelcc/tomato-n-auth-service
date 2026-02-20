@@ -17,5 +17,5 @@ const { publicKey, privateKey } = crypto.generateKeyPairSync("rsa", {
 
 const currentPath = process.cwd();
 
-fs.writeFileSync(`${currentPath}/src/certs/private.pem`, privateKey);
-fs.writeFileSync(`${currentPath}/src/certs/public.pem`, publicKey);
+fs.writeFileSync(`${currentPath}/certs/private.pem`, privateKey);
+fs.writeFileSync(`${currentPath}/certs/public.pem`, publicKey);

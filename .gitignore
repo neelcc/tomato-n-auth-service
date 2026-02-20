@@ -147,5 +147,5 @@ vite.config.ts.timestamp-*
 
 #key folder
 
-src/certs/
+certs/
 public/
