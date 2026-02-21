@@ -11,7 +11,13 @@
         "lint:fix": "eslint . --fix",
         "test": "vitest --watch ",
         "prepare": "husky",
-        "build" : "tsc"
+        "build" : "tsc",
+        "migration:generate": "typeorm-ts-node-esm migration:generate -d src/config/data-source.ts",
+        "migration:run": "typeorm-ts-node-esm migration:run -d src/config/data-source.ts",
+        "migration:create": "typeorm-ts-node-esm migration:create",
+        "migration:revert": "typeorm-ts-node-esm migration:revert -d src/config/data-source.ts",
+        "migration:show": "typeorm-ts-node-esm migration:show -d src/config/data-source.ts",
+        "schema:drop": "typeorm-ts-node-esm schema:drop -d src/config/data-source.ts"
     },
     "keywords": [],
     "author": "",

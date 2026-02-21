@@ -28,6 +28,7 @@
         // "noImplicitReturns": true,
         // "noImplicitOverride": true,
         // "noUnusedLocals": true,
+        "verbatimModuleSyntax": true,
         // "noUnusedParameters": true,
         // "noFallthroughCasesInSwitch": true,
         // "noPropertyAccessFromIndexSignature": true,
@@ -35,7 +36,6 @@
         // Recommended Options
         "strict": true,
         "strictPropertyInitialization": false,
-        "verbatimModuleSyntax": true,
         "isolatedModules": false,
         "noUncheckedSideEffectImports": true,
         "moduleDetection": "force",
