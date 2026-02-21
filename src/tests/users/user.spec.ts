@@ -98,5 +98,30 @@ describe("GET /auth/self", () => {
 
             expect(response.statusCode).toBe(401);
         });
+
+        it.todo("should return the new token", async () => {
+            const userData = {
+                firstName: "Nexelcc",
+                lastName: "Chaurasiya",
+                email: "neelcxc@gmail.com",
+                password: "iloveneha",
+            };
+            const userRepository = connection.getRepository(User);
+            const data = await userRepository.save({
+                ...userData,
+                role: Role.Customer,
+            });
+            const accessToken = jwks.token({
+                sub: String(data.id),
+                role: "customer",
+            });
+
+            const response = await request(app)
+                .get("/auth/self")
+                .set("Cookie", [`accessToken=${accessToken}`])
+                .send(userData);
+
+            expect(response.statusCode).toBe(401);
+        });
     });
 });

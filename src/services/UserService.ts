@@ -27,11 +27,11 @@ export class UserService {
     }
 
     async findByEmail(email: string) {
-        return await this.userRepository.findOne({
-            where: {
-                email,
-            },
-        });
+        return await this.userRepository
+            .createQueryBuilder("user")
+            .addSelect("user.password")
+            .where("user.email = :email", { email })
+            .getOne();
     }
 
     async findById(id: number) {

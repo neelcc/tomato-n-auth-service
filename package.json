@@ -9,8 +9,9 @@
         "format:check": "prettier . --check",
         "lint:check": "eslint . ",
         "lint:fix": "eslint . --fix",
-        "test": "vitest",
-        "prepare": "husky"
+        "test": "vitest --watch ",
+        "prepare": "husky",
+        "build" : "tsc"
     },
     "keywords": [],
     "author": "",
