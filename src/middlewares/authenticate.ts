@@ -7,7 +7,7 @@ export default expressjwt({
     secret: JwksRsa.expressJwtSecret({
         jwksUri: Config.jwksUri,
         cache: true,
-        rateLimit: true,
+        rateLimit: true,    
     }) as GetVerificationKey,
     algorithms: ["RS256"],
     getToken: (req) => {

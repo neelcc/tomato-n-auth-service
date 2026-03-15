@@ -5,7 +5,7 @@ import type { DataSource } from "typeorm";
 import { AppDataSource } from "../../config/data-source.js";
 import app from "../../app.js";
 import { User } from "../../entity/User.js";
-import { Role } from "../../constants/index.js";
+import { Roles } from "../../constants/index.js";
 import { isJwt } from "./utils/index.js";
 import { RefreshToken } from "../../entity/RefreshToken.js";
 
@@ -85,7 +85,7 @@ describe("POST /auth/register", () => {
             const repository = connection.getRepository(User);
             const users = await repository.find();
 
-            expect(users[0]?.role).toBe(Role.Customer);
+            expect(users[0]?.role).toBe(Roles.Customer);
         });
 
         it("should check whether password is hashed or not", async () => {

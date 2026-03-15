@@ -3,7 +3,7 @@ import { User } from "../entity/User.js";
 import type { UserData } from "../types/index.js";
 import bcrypt from "bcrypt";
 import createHttpError from "http-errors";
-import { Role } from "../constants/index.js";
+import { Roles } from "../constants/index.js";
 
 export class UserService {
     constructor(private userRepository: Repository<User>) {}
@@ -17,7 +17,7 @@ export class UserService {
                 lastName,
                 email,
                 password: hashedPassword,
-                role: Role.Customer,
+                role: Roles.Customer,
             });
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
         } catch (err) {

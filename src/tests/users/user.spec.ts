@@ -14,7 +14,7 @@ import request from "supertest";
 import app from "../../app.js";
 import createJWKSMock from "mock-jwks";
 import { User } from "../../entity/User.js";
-import { Role } from "../../constants/index.js";
+import { Roles } from "../../constants/index.js";
 
 describe("GET /auth/self", () => {
     let connection: DataSource;
@@ -66,7 +66,7 @@ describe("GET /auth/self", () => {
             const userRepository = connection.getRepository(User);
             const data = await userRepository.save({
                 ...userData,
-                role: Role.Customer,
+                role: Roles.Customer,
             });
 
             const accessToken = jwks.token({
@@ -90,7 +90,7 @@ describe("GET /auth/self", () => {
                 password: "iloveneha",
             };
             const userRepository = connection.getRepository(User);
-            await userRepository.save({ ...userData, role: Role.Customer });
+            await userRepository.save({ ...userData, role: Roles.Customer });
 
             const response = await request(app)
                 .get("/auth/self")
@@ -109,7 +109,7 @@ describe("GET /auth/self", () => {
             const userRepository = connection.getRepository(User);
             const data = await userRepository.save({
                 ...userData,
-                role: Role.Customer,
+                role: Roles.Customer,
             });
             const accessToken = jwks.token({
                 sub: String(data.id),
