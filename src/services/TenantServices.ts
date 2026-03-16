@@ -12,4 +12,16 @@ export class TenantService {
     async create(tenantData: ITenant) {
         return await this.TenantRepository.save(tenantData);
     }
+
+    async getById(tenantId: number) {
+        return await this.TenantRepository.findOne({
+            where: {
+                id: tenantId,
+            },
+        });
+    }
+
+    async deleteById(tenantId: number) {
+        return await this.TenantRepository.delete(tenantId);
+    }
 }
