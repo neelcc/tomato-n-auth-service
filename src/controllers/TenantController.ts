@@ -1,6 +1,9 @@
-import type { NextFunction, Request, Response } from "express";
+import type { NextFunction, Response } from "express";
 import type { TenantService } from "../services/TenantServices.js";
-import type { CreateTenantRequest } from "../types/index.js";
+import type {
+    TenantQueryParams,
+    TenantValidatedRequest,
+} from "../types/index.js";
 import createHttpError from "http-errors";
 import type { Logger } from "winston";
 
@@ -10,7 +13,11 @@ export class TenantController {
         private logger: Logger,
     ) {}
 
-    async create(req: CreateTenantRequest, res: Response, next: NextFunction) {
+    async create(
+        req: TenantValidatedRequest,
+        res: Response,
+        next: NextFunction,
+    ) {
         const { name, address } = req.body;
         try {
             const tenant = await this.tenantService.create({ name, address });
@@ -21,22 +28,35 @@ export class TenantController {
         }
     }
 
-    getList(req: Request, res: Response, next: NextFunction) {
+    async getList(
+        req: TenantValidatedRequest,
+        res: Response,
+        next: NextFunction,
+    ) {
+        const validatedQuery = req.validatedQuery as TenantQueryParams;
+
         try {
-            res.status(201).send();
+            const [tenants, count] =
+                await this.tenantService.getList(validatedQuery);
+
+            this.logger.info("All tenant have been fetched");
+            res.json({
+                currentPage: validatedQuery.currentPage,
+                perPage: validatedQuery.perPage,
+                total: count,
+                data: tenants,
+            });
         } catch (error) {
             next(error);
         }
     }
 
-    async getOne(req: Request, res: Response, next: NextFunction) {
-        const tenantId = req.params.id;
-
-        if (isNaN(Number(tenantId))) {
-            const error = createHttpError(400, "Invalid Url Param");
-            next(error);
-            return;
-        }
+    async getOne(
+        req: TenantValidatedRequest,
+        res: Response,
+        next: NextFunction,
+    ) {
+        const tenantId = req.validatedParams?.id;
 
         try {
             const tenant = await this.tenantService.getById(Number(tenantId));
@@ -55,14 +75,12 @@ export class TenantController {
         }
     }
 
-    async destroy(req: Request, res: Response, next: NextFunction) {
-        const tenantId = req.params.id;
-
-        if (isNaN(Number(tenantId))) {
-            const error = createHttpError(400, "Invalid Url Param");
-            next(error);
-            return;
-        }
+    async destroy(
+        req: TenantValidatedRequest,
+        res: Response,
+        next: NextFunction,
+    ) {
+        const tenantId = req.validatedParams?.id;
 
         try {
             await this.tenantService.deleteById(Number(tenantId));
@@ -79,27 +97,25 @@ export class TenantController {
         }
     }
 
-    async updateOne(req: Request, res: Response, next: NextFunction) {
-        const tenantId = req.params.id;
-
-        if (isNaN(Number(tenantId))) {
-            const error = createHttpError(400, "Invalid Url Param");
-            next(error);
-            return;
-        }
+    async updateOne(
+        req: TenantValidatedRequest,
+        res: Response,
+        next: NextFunction,
+    ) {
+        const tenantId = req.validatedParams?.id;
+        const { name, address } = req.body;
 
         try {
-            const tenant = await this.tenantService.getById(Number(tenantId));
+            await this.tenantService.updateById(Number(tenantId), {
+                name,
+                address,
+            });
 
-            if (!tenant) {
-                const error = createHttpError(400, "Tenant does not exist");
-                next(error);
-                return;
-            }
+            this.logger.info("Tenant Updated successfully.");
 
-            this.logger.info("Tenant fetched successfully.");
-
-            res.json(tenant);
+            res.json({
+                id: Number(tenantId),
+            });
         } catch (error) {
             next(error);
         }

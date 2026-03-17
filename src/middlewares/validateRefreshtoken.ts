@@ -24,9 +24,6 @@ export default expressjwt({
                     user: true,
                 },
             });
-            console.log(token);
-
-            console.log(refreshToken);
 
             return refreshToken === null;
 

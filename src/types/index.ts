@@ -42,6 +42,18 @@ export interface ITenant {
     address: string;
 }
 
-export interface CreateTenantRequest extends Request {
+export interface TenantQueryParams {
+    q: string;
+    perPage: number;
+    currentPage: number;
+}
+
+export interface TenantQueryId {
+    id: number;
+}
+
+export interface TenantValidatedRequest extends Request {
     body: ITenant;
+    validatedQuery?: TenantQueryParams;
+    validatedParams?: TenantQueryId;
 }

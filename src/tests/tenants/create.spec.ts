@@ -51,7 +51,7 @@ describe("POST /tenant/", () => {
     describe("Fields are not missing", () => {
         it("should send 201 status code", async () => {
             const tenantData = {
-                name: "Aai Ekvira",
+                name: "Magan Laal Chikki",
                 address: "Lonavala",
             };
 
@@ -70,7 +70,7 @@ describe("POST /tenant/", () => {
 
         it("should check whether tenant data is stored", async () => {
             const tenantData = {
-                name: "Aai Ekvira",
+                name: "Magan Laal Chikki",
                 address: "Lonavala",
             };
 
@@ -86,14 +86,13 @@ describe("POST /tenant/", () => {
                 .send(tenantData);
             const tenants = await tenantRepository.find();
 
-             
             expect(tenants).toHaveLength(1);
             expect(tenants[0]?.name).toBe(tenantData.name);
         });
 
         it("should send 401 if user is not authenticated", async () => {
             const tenantData = {
-                name: "Aai Ekvira",
+                name: "Magan Laal Chikki",
                 address: "Lonavala",
             };
 
@@ -106,7 +105,7 @@ describe("POST /tenant/", () => {
 
         it("should send 403 if the user role is not authorized", async () => {
             const tenantData = {
-                name: "Aai Ekvira",
+                name: "Magan Laal Chikki",
                 address: "Lonavala",
             };
 
@@ -128,7 +127,7 @@ describe("POST /tenant/", () => {
 
         it("should send 201 if the user is authorized", async () => {
             const tenantData = {
-                name: "Aai Ekvira",
+                name: "Magan Laal Chikki",
                 address: "Lonavala",
             };
 
@@ -165,16 +164,10 @@ describe("POST /tenant/", () => {
 
             const tenants = await tenantsRepository.find();
 
-            console.log(tenants);
-
             const response = await request(app)
                 .get(`/tenant/${tenants[0]?.id}`)
                 .set("Cookie", `accessToken=${AdminToken}`)
                 .send(tenantData);
-
-            console.log("Hello");
-
-            console.log(response.body);
 
             expect((response.body as Record<string, string>).name).toBe(
                 tenantData.name,
@@ -210,6 +203,66 @@ describe("POST /tenant/", () => {
             expect((response.body as Record<string, number>).id).toBe(
                 tenants[0]?.id,
             );
+        });
+
+        it("should get update the user by Id ", async () => {
+            const tenantData = {
+                name: "Magan Laal Chikki",
+                address: "Lonavala",
+            };
+
+            const newTenantData = {
+                name: "La Paris Loi",
+                address: "Effiel Tower , Paris 20139 ",
+            };
+
+            const tenantsRepository = AppDataSource.getRepository(Tenant);
+
+            await tenantsRepository.save(tenantData);
+
+            const AdminToken = jwks.token({
+                sub: "1",
+                role: Roles.Admin,
+            });
+
+            const tenants = await tenantsRepository.find();
+
+            const response = await request(app)
+                .patch(`/tenant/update/${tenants[0]?.id}`)
+                .set("Cookie", `accessToken=${AdminToken}`)
+                .send(newTenantData);
+
+            const tenantId = (response.body as Record<string, number>).id;
+
+            const tenant = await tenantsRepository.findOne({
+                where: {
+                    id: Number(tenantId),
+                },
+            });
+
+            expect(tenant?.name).toBe(newTenantData.name);
+            expect(tenant?.address).toBe(newTenantData.address);
+        });
+
+        it("should get the list of tenants", async () => {
+            const tenantDataOne = {
+                name: "Magan Laal Chikki",
+                address: "Lonavala",
+            };
+
+            const tenantDataTwo = {
+                name: "Magan Laal Chikki",
+                address: "Lonavala",
+            };
+
+            const tenantsRepository = AppDataSource.getRepository(Tenant);
+
+            await tenantsRepository.save(tenantDataOne);
+            await tenantsRepository.save(tenantDataTwo);
+
+            const response = await request(app).get("/tenant");
+
+            expect((response.body as Record<string, number>).total).toBe(2);
         });
     });
 

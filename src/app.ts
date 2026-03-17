@@ -39,7 +39,6 @@ app.use((err: HttpError, req: Request, res: Response, next: NextFunction) => {
     if (err instanceof z.ZodError) {
         return res.status(400).json({
             errors: z.treeifyError(err),
-            msg: "Hello",
         });
     }
 

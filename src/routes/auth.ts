@@ -4,7 +4,7 @@ import { UserService } from "../services/UserService.js";
 import { AppDataSource } from "../config/data-source.js";
 import { User } from "../entity/User.js";
 import logger from "../config/logger.js";
-import { validate } from "../middlewares/validate.js";
+import { validateBody } from "../middlewares/validate.js";
 import { loginSchema, registerSchema } from "../validators/auth.validation.js";
 import { TokenService } from "../services/TokenService.js";
 import { RefreshToken } from "../entity/RefreshToken.js";
@@ -28,11 +28,11 @@ const authcontroller = new AuthController(
     credentialService,
 );
 
-router.post("/register", validate(registerSchema), (req, res, next) =>
+router.post("/register", validateBody(registerSchema), (req, res, next) =>
     authcontroller.register(req, res, next),
 );
 
-router.post("/login", validate(loginSchema), (req, res, next) =>
+router.post("/login", validateBody(loginSchema), (req, res, next) =>
     authcontroller.login(req, res, next),
 );
 
