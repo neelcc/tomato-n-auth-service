@@ -9,6 +9,7 @@ import { User } from "../entity/User.js";
 import { validateBody, validateParams, validateQuery } from "../middlewares/validate.js";
 import { updateUserSchema, userIdSchema, userListSchema } from "../validators/user.validation.js";
 import logger from "../config/logger.js";
+import type { AuthenticatedCreateUserRequest } from "../types/index.js";
 
 const router = express.Router();
 const userRepository =  AppDataSource.getRepository(User)
@@ -19,7 +20,7 @@ const usercontroller = new UserController(
 );
 
 router.post("/", authenticate, canAccess([Roles.Admin]), (req, res, next) =>
-    usercontroller.create(req , res, next),
+    usercontroller.create(req  as AuthenticatedCreateUserRequest , res, next),
 );
 
 router.get("/:id",authenticate, canAccess([Roles.Admin]), validateParams(userIdSchema) , (req,res,next)=>

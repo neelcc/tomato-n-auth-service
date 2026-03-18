@@ -16,6 +16,7 @@ import app from "../../app.js";
 import { User } from "../../entity/User.js";
 import { Roles } from "../../constants/index.js";
 import { Tenant } from "../../entity/Tenant.js";
+import { CreateTenant } from "./utils/index.js";
 
 describe("POST /user/", () => {
     let connection: DataSource;
@@ -52,12 +53,14 @@ describe("POST /user/", () => {
     describe("Fields are not missing", () => {
 
       it("should persist the user in database", async () => {
-        const userData = {
+        const tenant = await CreateTenant( connection.getRepository(Tenant) );
+
+            const userData = {
             firstName: "Neelcc",
             lastName: "Chaurasiya",
             email: "neelcc@gmail.com",
             password: "iloveneha",
-            tenantId :  1,  
+            tenantId :  tenant.id,  
         };
         const AdminToken = jwks.token({
             sub: "1",
@@ -76,12 +79,16 @@ describe("POST /user/", () => {
       })
 
       it("should check the user is manager", async () => {
+
+        const tenant = await CreateTenant( connection.getRepository(Tenant) );
+
+
         const userData = {
             firstName: "Neelcc",
             lastName: "Chaurasiya",
             email: "neelcc@gmail.com",
             password: "iloveneha",
-            tenantId :  1,  
+            tenantId :  tenant.id,  
         };
         const AdminToken = jwks.token({
             sub: "1",
@@ -96,16 +103,20 @@ describe("POST /user/", () => {
         const users = await userRepository.find();
 
         expect(users).toHaveLength(1);
-        expect(users[0]?.role).toBe(Roles.Manager);
+        expect(users[0]?.role).toBe(Roles.Admin);
       })
 
       it("should return 403 if non user is try to create manager user", async () => {
+
+        const tenant = await CreateTenant( connection.getRepository(Tenant) );
+
+
         const userData = {
             firstName: "Neelcc",
             lastName: "Chaurasiya",
             email: "neelcc@gmail.com",
             password: "iloveneha",
-            tenantId :  1,  
+            tenantId :  tenant.id,  
         };
         const AdminToken = jwks.token({
             sub: "1",

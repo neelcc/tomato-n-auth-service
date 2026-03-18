@@ -9,6 +9,7 @@ export const canAccess = (roles: string[]) => {
 
     const _req = req as AuthRequest
     const roleFromToken = _req.auth.role;
+    
 
     if(!roles.includes(roleFromToken)){
         const error = createHttpError(403, "You don't have enough permission")

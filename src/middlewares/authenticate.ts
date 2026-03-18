@@ -3,7 +3,7 @@ import JwksRsa from "jwks-rsa";
 import { Config } from "../config/index.js";
 import type { AuthCookie } from "../types/index.js";
 
-export default expressjwt({
+    export default expressjwt({
     secret: JwksRsa.expressJwtSecret({
         jwksUri: Config.jwksUri,
         cache: true,

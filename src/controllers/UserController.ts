@@ -1,7 +1,6 @@
-import type { NextFunction, Request, Response } from "express";
+import type { NextFunction, Response } from "express";
 import { UserService } from "../services/UserService.js";
-import type { LimitedUserData, UserData, UserLimitedDataRequest, UserQuery, UserValidatedRequest } from "../types/index.js";
-import { Roles } from "../constants/index.js";
+import type { AuthenticatedCreateUserRequest, LimitedUserData,  UserLimitedDataRequest, UserQuery, UserValidatedRequest } from "../types/index.js";
 import type { Logger } from "winston";
 import createHttpError from "http-errors";
 
@@ -10,18 +9,26 @@ export class UserController {
         private userService : UserService,
         private logger : Logger
     ){}
-    async create(req:Request,res:Response,next:NextFunction) {
+    async create(req:AuthenticatedCreateUserRequest,res:Response,next:NextFunction) {
 
         
         
-        const {firstName,lastName,email,password} : UserData = req.body
+        const { firstName, lastName, email, password, tenantId } = req.body;
+        const role = req.auth.role
         
         try {
             
+            console.log("role is",firstName, lastName, email, password, tenantId, role );
+            
 
-            const user = await this.userService.create( {firstName,lastName,email,password,role : Roles.Manager}
-            )
-
+        const user = await this.userService.create({
+                firstName,
+                lastName,
+                email,
+                password,
+                role  ,
+                tenantId,
+            });
             res.json({
                 id : user.id
             })

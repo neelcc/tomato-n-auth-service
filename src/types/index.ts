@@ -6,6 +6,7 @@ export interface UserData {
     email: string;
     password: string;
     role : string;
+    tenantId?: number;
 }
 
 export interface RegisterUserRequest extends Request {
@@ -17,6 +18,10 @@ export interface UserLoginData {
     password: string;
 }
 
+export interface CreateUserRequest extends Request {
+    body: UserData;
+}
+
 export interface LoginUserRequest extends Request {
     body: UserLoginData;
 }
@@ -26,6 +31,10 @@ export interface AuthRequest extends Request {
         sub: string;
         role: string;
         id?: string;
+        tenant: string;
+        firstName: string;
+        lastName: string;
+        email: string;
     };
 }
 
@@ -97,3 +106,7 @@ export interface UserLimitedDataRequest extends Request {
 
 
 
+export interface AuthenticatedCreateUserRequest  extends Request {
+    auth : AuthRequest['auth']
+    body : UserData
+}

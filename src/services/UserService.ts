@@ -7,7 +7,15 @@ import createHttpError from "http-errors";
 export class UserService {
     constructor(private userRepository: Repository<User>) {}
 
-    async create({ firstName, lastName, email, password, role }: UserData) {
+    async create({ firstName, lastName, email, password, role, tenantId }: UserData) {
+        const user = await this.userRepository.findOne({
+            where: { email: email },
+        });
+        if (user) {
+            const err = createHttpError(400, "Email is already exists!");
+            throw err;
+        }
+
         try {
             const saltRounds = 10;
             const hashedPassword = await bcrypt.hash(password, saltRounds);
@@ -17,6 +25,7 @@ export class UserService {
                 email,
                 password: hashedPassword,
                 role,
+                tenantId,
             });
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
         } catch (err) {
@@ -35,11 +44,10 @@ export class UserService {
 
     async findById(id: number) {
         return await this.userRepository.findOne({
-            where: {
-                id,
-            },
-        });
-    }
+            where: { id },
+            relations: ["tenant"],
+        })
+}
 
     async deleteOne(id: number){
         return await this.userRepository.delete(id)            
@@ -105,5 +113,4 @@ export class UserService {
 
     }
     
-
 }
