@@ -1,6 +1,6 @@
 import type { Repository } from "typeorm";
 import type { Tenant } from "../entity/Tenant.js";
-import type { ITenant, TenantQueryParams } from "../types/index.js";
+import type { ITenant, TenantQuery } from "../types/index.js";
 
 export class TenantService {
     TenantRepository: Repository<Tenant>;
@@ -29,7 +29,7 @@ export class TenantService {
         return await this.TenantRepository.update(id, tenantData);
     }
 
-    async getList(param: TenantQueryParams) {
+    async getList(param: TenantQuery) {
         const queryBuilder = this.TenantRepository.createQueryBuilder("tenant");
 
         if (param.q) {

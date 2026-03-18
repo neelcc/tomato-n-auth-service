@@ -10,6 +10,7 @@
         "lint:check": "eslint . ",
         "lint:fix": "eslint . --fix",
         "test": "vitest --no-cache",
+        "file:test" : "vitest",
         "prepare": "husky",
         "build" : "tsc",
         "migration:generate": "typeorm-ts-node-esm migration:generate -d src/config/data-source.ts",

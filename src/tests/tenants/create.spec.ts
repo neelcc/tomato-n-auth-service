@@ -264,6 +264,8 @@ describe("POST /tenant/", () => {
 
             expect((response.body as Record<string, number>).total).toBe(2);
         });
+
+        
     });
 
     describe("Fields are missing", () => {

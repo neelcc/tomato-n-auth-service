@@ -1,7 +1,7 @@
 import type { NextFunction, Response } from "express";
 import type { TenantService } from "../services/TenantServices.js";
 import type {
-    TenantQueryParams,
+    TenantQuery,
     TenantValidatedRequest,
 } from "../types/index.js";
 import createHttpError from "http-errors";
@@ -33,7 +33,7 @@ export class TenantController {
         res: Response,
         next: NextFunction,
     ) {
-        const validatedQuery = req.validatedQuery as TenantQueryParams;
+        const validatedQuery = req.validatedQuery as TenantQuery;
 
         try {
             const [tenants, count] =

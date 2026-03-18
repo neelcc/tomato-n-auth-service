@@ -1,14 +1,13 @@
-import type { Repository } from "typeorm";
+import { Brackets, type Repository } from "typeorm";
 import { User } from "../entity/User.js";
-import type { UserData } from "../types/index.js";
+import type { LimitedUserData, UserData, UserQuery } from "../types/index.js";
 import bcrypt from "bcrypt";
 import createHttpError from "http-errors";
-import { Roles } from "../constants/index.js";
 
 export class UserService {
     constructor(private userRepository: Repository<User>) {}
 
-    async create({ firstName, lastName, email, password }: UserData) {
+    async create({ firstName, lastName, email, password, role }: UserData) {
         try {
             const saltRounds = 10;
             const hashedPassword = await bcrypt.hash(password, saltRounds);
@@ -17,7 +16,7 @@ export class UserService {
                 lastName,
                 email,
                 password: hashedPassword,
-                role: Roles.Customer,
+                role,
             });
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
         } catch (err) {
@@ -41,4 +40,70 @@ export class UserService {
             },
         });
     }
+
+    async deleteOne(id: number){
+        return await this.userRepository.delete(id)            
+    }
+
+    async update(
+        userId: number,
+        { firstName, lastName, role, email, tenantId }: LimitedUserData,
+    ) {
+        try {
+            
+            
+            await this.userRepository.update(userId, {
+                firstName,
+                lastName,
+                role,
+                email,
+                tenant: tenantId ? { id: tenantId } : null,
+            });
+
+            return await this.userRepository.findOneBy({ id: userId });
+            
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        } catch (err) {
+            console.error('Database update error:', err);
+            const error = createHttpError(
+                500,
+                "Failed to update the user in the database",
+            );
+            throw error;
+        }
+    }
+    
+    async getAll(validatedQuery : UserQuery) {
+
+        const queryBuilder = this.userRepository.createQueryBuilder("user");
+
+        if (validatedQuery.q) {
+            const searchTerm = `%${validatedQuery.q}%`;
+            queryBuilder.where(
+                new Brackets((qb) => {
+                    qb.where(
+                        "CONCAT(user.firstName, ' ', user.lastName) ILike :q",
+                        { q: searchTerm },
+                    ).orWhere("user.email ILike :q", { q: searchTerm });
+                }),
+            );
+        }
+
+        if (validatedQuery.role) {
+            queryBuilder.andWhere("user.role = :role", {
+                role: validatedQuery.role,
+            });
+        }
+
+        const result = await queryBuilder
+            .leftJoinAndSelect("user.tenant", "tenant")
+            .skip((validatedQuery.currentPage - 1) * validatedQuery.perPage)
+            .take(validatedQuery.perPage)
+            .orderBy("user.id", "DESC")
+            .getManyAndCount();
+        return result;
+
+    }
+    
+
 }

@@ -5,6 +5,7 @@ export interface UserData {
     lastName: string;
     email: string;
     password: string;
+    role : string;
 }
 
 export interface RegisterUserRequest extends Request {
@@ -42,18 +43,57 @@ export interface ITenant {
     address: string;
 }
 
-export interface TenantQueryParams {
+export interface TenantQuery {
     q: string;
     perPage: number;
     currentPage: number;
 }
 
-export interface TenantQueryId {
+export interface TenantParams {
     id: number;
 }
 
 export interface TenantValidatedRequest extends Request {
     body: ITenant;
-    validatedQuery?: TenantQueryParams;
-    validatedParams?: TenantQueryId;
+    validatedQuery?: TenantQuery;
+    validatedParams?: TenantParams;
 }
+
+export interface UserQueryId {
+    id: number;
+} 
+
+export interface UserParams {
+    id : number;
+}
+
+export interface UserQuery {
+    q: string;
+    perPage: number;
+    currentPage: number;
+    role?: string;
+}
+
+
+export interface LimitedUserData {
+    firstName: string;
+    lastName: string;
+    email: string;
+    role : string;
+    tenantId : number;
+}
+
+export interface UserValidatedRequest extends Request {
+    body : UserData;
+    validatedQuery?: UserQuery;
+    validatedParams?: UserParams;
+}
+
+export interface UserLimitedDataRequest extends Request {
+    body : LimitedUserData;
+    validatedQuery?: UserQuery;
+    validatedParams?: UserParams;
+}
+
+
+

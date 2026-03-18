@@ -19,6 +19,7 @@ export const validateBody =
     <T>(schema: z.ZodType<T>) =>
     (req: Request, res: Response, next: NextFunction) => {
         const result = schema.safeParse(req.body);
+        console.log(result);
         if (!result.success) return next(result.error);
         req.body = result.data;
         next();
@@ -28,6 +29,7 @@ export const validateParams =
     <T>(schema: z.ZodType<T>) =>
     (req: Request, res: Response, next: NextFunction) => {
         const result = schema.safeParse(req.params);
+        
         if (!result.success) return next(result.error);
         (req as any).validatedParams = result.data;
         next();

@@ -9,6 +9,7 @@ import type { HttpError } from "http-errors";
 import logger from "./config/logger.js";
 import authRouter from "./routes/auth.js";
 import tenantRouter from "./routes/tenant.js";
+import userRouter from "./routes/user.js";
 import z from "zod";
 import cookieParser from "cookie-parser";
 import path from "node:path";
@@ -30,6 +31,7 @@ app.get("/.well-known/jwks.json", (req, res) => {
 
 app.use("/auth", authRouter);
 app.use("/tenant", tenantRouter);
+app.use("/user", userRouter);
 
 // global error handler
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -38,9 +40,11 @@ app.use((err: HttpError, req: Request, res: Response, next: NextFunction) => {
 
     if (err instanceof z.ZodError) {
         return res.status(400).json({
-            errors: z.treeifyError(err),
+            success: false,
+            errors: err.treeify(), 
         });
     }
+    
 
     const statusCode = err.statusCode || err.status || 500;
     res.status(statusCode).json({
