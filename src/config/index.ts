@@ -8,6 +8,8 @@ config({
 
 function required(value: string | undefined, name: string): string {
     if (!value) {
+        console.log(name);
+
         throw new Error(`Missing required environment variable: ${name}`);
     }
     return value;

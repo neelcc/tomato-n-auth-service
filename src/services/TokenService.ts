@@ -12,6 +12,7 @@ export class TokenService {
         let privateKey: string;
 
         try {
+            console.log(Config.PRIVATE_KEY);
             if (!Config.PRIVATE_KEY) {
                 const error = createHttpError(
                     500,
@@ -21,6 +22,7 @@ export class TokenService {
             }
 
             privateKey = Config.PRIVATE_KEY;
+            console.log(privateKey);
 
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
         } catch (err) {

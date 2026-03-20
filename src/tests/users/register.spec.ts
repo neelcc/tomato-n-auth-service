@@ -59,10 +59,11 @@ describe("POST /auth/register", () => {
                 .post("/auth/register")
                 .send(userData);
 
-            expect(response.body).toHaveProperty("id");
             const repository = connection.getRepository(User);
             const users = await repository.find();
+            console.log("g");
 
+            expect(response.body).toHaveProperty("id");
             expect((response.body as Record<string, string>).id).toBe(
                 users[0]?.id,
             );
@@ -117,8 +118,8 @@ describe("POST /auth/register", () => {
                 .post("/auth/register")
                 .send(userData);
 
-            let accessToken = null;
-            let refreshToken = null;
+            let accessToken: string | null = null;
+            let refreshToken: string | null = null;
 
             interface Headers {
                 ["set-cookie"]?: string[];
