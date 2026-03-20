@@ -14,6 +14,8 @@ export default defineConfig(
             "eslint.config.mjs",
             "src/scripts/generateKeys.mjs",
             "src/scripts/convertPemtoJwks.mjs",
+            "src/tests/**",
+            "**/*.spec.ts"
         ],
     },
     {

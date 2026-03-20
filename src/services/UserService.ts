@@ -7,7 +7,14 @@ import createHttpError from "http-errors";
 export class UserService {
     constructor(private userRepository: Repository<User>) {}
 
-    async create({ firstName, lastName, email, password, role, tenantId }: UserData) {
+    async create({
+        firstName,
+        lastName,
+        email,
+        password,
+        role,
+        tenantId,
+    }: UserData) {
         const user = await this.userRepository.findOne({
             where: { email: email },
         });
@@ -46,11 +53,11 @@ export class UserService {
         return await this.userRepository.findOne({
             where: { id },
             relations: ["tenant"],
-        })
-}
+        });
+    }
 
-    async deleteOne(id: number){
-        return await this.userRepository.delete(id)            
+    async deleteOne(id: number) {
+        return await this.userRepository.delete(id);
     }
 
     async update(
@@ -58,8 +65,6 @@ export class UserService {
         { firstName, lastName, role, email, tenantId }: LimitedUserData,
     ) {
         try {
-            
-            
             await this.userRepository.update(userId, {
                 firstName,
                 lastName,
@@ -69,10 +74,8 @@ export class UserService {
             });
 
             return await this.userRepository.findOneBy({ id: userId });
-            
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         } catch (err) {
-            console.error('Database update error:', err);
+            console.error("Database update error:", err);
             const error = createHttpError(
                 500,
                 "Failed to update the user in the database",
@@ -80,9 +83,8 @@ export class UserService {
             throw error;
         }
     }
-    
-    async getAll(validatedQuery : UserQuery) {
 
+    async getAll(validatedQuery: UserQuery) {
         const queryBuilder = this.userRepository.createQueryBuilder("user");
 
         if (validatedQuery.q) {
@@ -110,7 +112,5 @@ export class UserService {
             .orderBy("user.id", "DESC")
             .getManyAndCount();
         return result;
-
     }
-    
 }
