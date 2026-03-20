@@ -51,221 +51,222 @@ describe("POST /user/", () => {
     });
 
     describe("Fields are not missing", () => {
-
-      it("should persist the user in database", async () => {
-        const tenant = await CreateTenant( connection.getRepository(Tenant) );
+        it("should persist the user in database", async () => {
+            const tenant = await CreateTenant(connection.getRepository(Tenant));
 
             const userData = {
-            firstName: "Neelcc",
-            lastName: "Chaurasiya",
-            email: "neelcc@gmail.com",
-            password: "iloveneha",
-            tenantId :  tenant.id,  
-        };
-        const AdminToken = jwks.token({
-            sub: "1",
-            role: Roles.Admin,
+                firstName: "Neelcc",
+                lastName: "Chaurasiya",
+                email: "neelcc@gmail.com",
+                password: "iloveneha",
+                tenantId: tenant.id,
+            };
+            const AdminToken = jwks.token({
+                sub: "1",
+                role: Roles.Admin,
+            });
+
+            await request(app)
+                .post("/user/")
+                .set("Cookie", `accessToken=${AdminToken}`)
+                .send(userData);
+
+            const userRepository = connection.getRepository(User);
+
+            const users = await userRepository.find();
+
+            expect(users).toHaveLength(1);
+            expect(users[0]?.firstName).toBe(userData.firstName);
         });
 
+        it("should check the user is manager", async () => {
+            const tenant = await CreateTenant(connection.getRepository(Tenant));
 
-        await request(app).post("/user/").set("Cookie",`accessToken=${AdminToken}`).send(userData);
+            const userData = {
+                firstName: "Neelcc",
+                lastName: "Chaurasiya",
+                email: "neelcc@gmail.com",
+                password: "iloveneha",
+                tenantId: tenant.id,
+            };
+            const AdminToken = jwks.token({
+                sub: "1",
+                role: Roles.Admin,
+            });
 
-        const userRepository = connection.getRepository(User);
-        
-        const users = await userRepository.find();
+            await request(app)
+                .post("/user")
+                .set("Cookie", `accessToken=${AdminToken}`)
+                .send(userData);
 
-        expect(users).toHaveLength(1);
-        expect(users[0]?.firstName).toBe(userData.firstName);
-      })
+            const userRepository = connection.getRepository(User);
 
-      it("should check the user is manager", async () => {
+            const users = await userRepository.find();
 
-        const tenant = await CreateTenant( connection.getRepository(Tenant) );
-
-
-        const userData = {
-            firstName: "Neelcc",
-            lastName: "Chaurasiya",
-            email: "neelcc@gmail.com",
-            password: "iloveneha",
-            tenantId :  tenant.id,  
-        };
-        const AdminToken = jwks.token({
-            sub: "1",
-            role: Roles.Admin,
+            expect(users).toHaveLength(1);
+            expect(users[0]?.role).toBe(Roles.Admin);
         });
 
+        it("should return 403 if non user is try to create manager user", async () => {
+            const tenant = await CreateTenant(connection.getRepository(Tenant));
 
-        await request(app).post("/user").set("Cookie",`accessToken=${AdminToken}`).send(userData);
+            const userData = {
+                firstName: "Neelcc",
+                lastName: "Chaurasiya",
+                email: "neelcc@gmail.com",
+                password: "iloveneha",
+                tenantId: tenant.id,
+            };
+            const AdminToken = jwks.token({
+                sub: "1",
+                role: Roles.Customer,
+            });
 
-        const userRepository = connection.getRepository(User);
+            const response = await request(app)
+                .post("/user")
+                .set("Cookie", `accessToken=${AdminToken}`)
+                .send(userData);
 
-        const users = await userRepository.find();
-
-        expect(users).toHaveLength(1);
-        expect(users[0]?.role).toBe(Roles.Admin);
-      })
-
-      it("should return 403 if non user is try to create manager user", async () => {
-
-        const tenant = await CreateTenant( connection.getRepository(Tenant) );
-
-
-        const userData = {
-            firstName: "Neelcc",
-            lastName: "Chaurasiya",
-            email: "neelcc@gmail.com",
-            password: "iloveneha",
-            tenantId :  tenant.id,  
-        };
-        const AdminToken = jwks.token({
-            sub: "1",
-            role: Roles.Customer,
+            expect(response.statusCode).toBe(403);
         });
 
+        it("should get by id", async () => {
+            const userData = {
+                firstName: "Neelcc",
+                lastName: "Chaurasiya",
+                email: "neelcc@gmail.com",
+                password: "iloveneha",
+                tenantId: 1,
+            };
+            const AdminToken = jwks.token({
+                sub: "1",
+                role: Roles.Admin,
+            });
 
-        const response = await request(app).post("/user").set("Cookie",`accessToken=${AdminToken}`).send(userData);
+            const userRepository = AppDataSource.getRepository(User);
 
+            await userRepository.save(userData);
+            const users = await userRepository.find();
 
+            const response = await request(app)
+                .get(`/user/${users[0]?.id}`)
+                .set("Cookie", `accessToken=${AdminToken}`)
+                .send(userData);
 
-        expect(response.statusCode).toBe(403);
-      })
-
-      it("should get by id",  async () => {
-       
-        const userData = {
-            firstName: "Neelcc",
-            lastName: "Chaurasiya",
-            email: "neelcc@gmail.com",
-            password: "iloveneha",
-            tenantId :  1,  
-        };
-        const AdminToken = jwks.token({
-            sub: "1",
-            role: Roles.Admin,
+            expect((response.body as Record<string, string>).firstName).toBe(
+                userData.firstName,
+            );
         });
 
-        const userRepository = AppDataSource.getRepository(User);
+        it("should delete by id", async () => {
+            const userData = {
+                firstName: "Neelcc",
+                lastName: "Chaurasiya",
+                email: "neelcc@gmail.com",
+                password: "iloveneha",
+                tenantId: 1,
+            };
+            const AdminToken = jwks.token({
+                sub: "1",
+                role: Roles.Admin,
+            });
 
-        await userRepository.save(userData)
-        const users = await userRepository.find();
-        
-        
-        const response = await request(app).get(`/user/${users[0]?.id}`).set("Cookie",`accessToken=${AdminToken}`).send(userData);
-        
+            const userRepository = AppDataSource.getRepository(User);
 
-        
-        expect((response.body as Record<string, string> ).firstName).toBe(userData.firstName);
+            await userRepository.save(userData);
 
-      })
+            const users = await userRepository.find();
 
-      it("should delete by id",  async () => {
-       
-        const userData = {
-            firstName: "Neelcc",
-            lastName: "Chaurasiya",
-            email: "neelcc@gmail.com",
-            password: "iloveneha",
-            tenantId :  1,  
-        };
-        const AdminToken = jwks.token({
-            sub: "1",
-            role: Roles.Admin,
+            await request(app)
+                .get(`/user/delete/${users[0]?.id}`)
+                .set("Cookie", `accessToken=${AdminToken}`)
+                .send(userData);
+
+            const newUserList = await userRepository.find();
+
+            expect(newUserList).toHaveLength(0);
         });
 
-        const userRepository = AppDataSource.getRepository(User);
+        it("should update the user", async () => {
+            const userData = {
+                firstName: "Neelcc",
+                lastName: "Chaurasiya",
+                email: "neelcc@gmail.com",
+                password: "iloveneha",
+            };
 
-        await userRepository.save(userData)
-        
-        const users = await userRepository.find();
-        
-        await request(app).get(`/user/delete/${users[0]?.id}`).set("Cookie",`accessToken=${AdminToken}`).send(userData);
-        
-        const newUserList = await userRepository.find();
-        
-        expect(newUserList).toHaveLength(0);
+            const tenantData = {
+                name: "Magan Laal Chikki",
+                address: "Lonavala",
+            };
 
+            const tenantsRepository = AppDataSource.getRepository(Tenant);
 
-      })
+            await tenantsRepository.save(tenantData);
 
-      it("should update the user", async () => {
-        const userData = {
-            firstName: "Neelcc",
-            lastName: "Chaurasiya",
-            email: "neelcc@gmail.com",
-            password: "iloveneha",
-        };
+            const newUserData = {
+                firstName: "Meetccx",
+                lastName: "Chaurasiya",
+                email: "neelcc@gmail.com",
+                tenantId: 1,
+                role: Roles.Admin,
+            };
 
-        const tenantData = {
-            name: "Magan Laal Chikki",
-            address: "Lonavala",
-        };
+            const AdminToken = jwks.token({
+                sub: "1",
+                role: Roles.Admin,
+            });
 
-        const tenantsRepository = AppDataSource.getRepository(Tenant);
+            const userRepository = AppDataSource.getRepository(User);
 
-        await tenantsRepository.save(tenantData);
-      
+            await userRepository.save(userData);
 
-        const newUserData = {
-            firstName: "Meetccx",
-            lastName: "Chaurasiya",
-            email: "neelcc@gmail.com",
-            tenantId :  1,
-            role : Roles.Admin
-        }
-        
-        const AdminToken = jwks.token({
-            sub: "1",
-            role: Roles.Admin,
+            const user = await userRepository.find();
+
+            const response = await request(app)
+                .patch(`/user/update/${user[0]?.id}`)
+                .set("Cookie", `accessToken=${AdminToken}`)
+                .send(newUserData);
+
+            expect((response.body as Record<string, string>).firstName).toBe(
+                newUserData.firstName,
+            );
         });
 
-        const userRepository = AppDataSource.getRepository(User);
+        it("should get list of users", async () => {
+            const userDataOne = {
+                firstName: "Neelcc",
+                lastName: "Chaurasiya",
+                email: "neelcc@gmail.com",
+                password: "iloveneha",
+                tenantId: 1,
+            };
 
-        await userRepository.save(userData)
+            const userDataTwo = {
+                firstName: "Meetcc",
+                lastName: "Chaurasiya",
+                email: "neelx@gmail.com",
+                password: "iloveneha",
+                tenantId: 2,
+            };
 
-        const user = await userRepository.find();
+            const AdminToken = jwks.token({
+                sub: "1",
+                role: Roles.Admin,
+            });
 
-        const response = await request(app).patch(`/user/update/${user[0]?.id}`).set("Cookie",`accessToken=${AdminToken}`).send(newUserData);
+            const userRepository = AppDataSource.getRepository(User);
 
+            await userRepository.save(userDataOne);
+            await userRepository.save(userDataTwo);
 
-        expect((response.body as Record<string,string> ).firstName).toBe(newUserData.firstName);
+            const response = await request(app)
+                .get(`/user/`)
+                .set("Cookie", `accessToken=${AdminToken}`)
+                .send();
 
-      })
-
-      it("should get list of users",async () => {
-        const userDataOne = {
-            firstName: "Neelcc",
-            lastName: "Chaurasiya",
-            email: "neelcc@gmail.com",
-            password: "iloveneha",
-            tenantId :  1,  
-        };
-
-        const userDataTwo = {
-            firstName: "Meetcc",
-            lastName: "Chaurasiya",
-            email: "neelx@gmail.com",
-            password: "iloveneha",
-            tenantId :  2,  
-        };
-
-        const AdminToken = jwks.token({
-            sub: "1",
-            role: Roles.Admin,
+            expect((response.body as Record<string, number>).total).toBe(2);
         });
-
-        const userRepository = AppDataSource.getRepository(User);
-
-        await userRepository.save(userDataOne)
-        await userRepository.save(userDataTwo)
-        
-        
-        const response = await request(app).get(`/user/`).set("Cookie",`accessToken=${AdminToken}`).send()
-        
-        expect((response.body as Record<string, number>).total).toBe(2);
-        
-      })
-
     });
 
     describe("Fields are missing", () => {
