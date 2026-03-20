@@ -12,14 +12,17 @@ import tenantRouter from "./routes/tenant.js";
 import userRouter from "./routes/user.js";
 import z from "zod";
 import cookieParser from "cookie-parser";
-import path from "node:path";
 import jwks from "../public/.well-known/jwks.json" with { type: "json" };
+import { fileURLToPath } from "node:url";
+import path, { dirname } from "node:path";
 
 const app = express();
 app.use(express.json());
 app.use(cookieParser());
-console.log("CWD:", process.cwd());
-app.use(express.static(path.join(process.cwd(), "public")));
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+
+app.use(express.static(path.join(__dirname, "../public")));
 
 app.get("/", (req, res) => {
     res.send("Server is workings");
@@ -41,10 +44,9 @@ app.use((err: HttpError, req: Request, res: Response, next: NextFunction) => {
     if (err instanceof z.ZodError) {
         return res.status(400).json({
             success: false,
-            errors: err.treeify(), 
+            errors: err.treeify(),
         });
     }
-    
 
     const statusCode = err.statusCode || err.status || 500;
     res.status(statusCode).json({
