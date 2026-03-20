@@ -1,10 +1,5 @@
 import "reflect-metadata";
-import express, {
-    type NextFunction,
-    type Request,
-    type Response,
-} from "express";
-
+import express, { type Request, type Response } from "express";
 import type { HttpError } from "http-errors";
 import logger from "./config/logger.js";
 import authRouter from "./routes/auth.js";
@@ -12,24 +7,35 @@ import tenantRouter from "./routes/tenant.js";
 import userRouter from "./routes/user.js";
 import z from "zod";
 import cookieParser from "cookie-parser";
-import jwks from "../public/.well-known/jwks.json" with { type: "json" };
-import { fileURLToPath } from "node:url";
-import path, { dirname } from "node:path";
+import path from "node:path";
+import fs from "node:fs/promises";
 
 const app = express();
+
 app.use(express.json());
 app.use(cookieParser());
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
+app.get("/.well-known/jwks.json", async (req: Request, res: Response) => {
+    try {
+        const jwksPath = path.join(
+            process.cwd(),
+            "public/.well-known/jwks.json",
+        );
 
-app.use(express.static(path.join(__dirname, "../public")));
+        const fileContent = await fs.readFile(jwksPath, "utf-8");
 
-app.get("/", (req, res) => {
-    res.send("Server is workings");
+        res.setHeader("Content-Type", "application/json");
+        res.send(fileContent);
+    } catch (error) {
+        console.error("JWKS error:", error);
+        res.status(500).json({
+            error: "Failed to load JWKS",
+        });
+    }
 });
 
-app.get("/.well-known/jwks.json", (req, res) => {
-    res.json(jwks);
+app.get("/", (req, res) => {
+    res.send("Server is working");
 });
 
 app.use("/auth", authRouter);
@@ -37,8 +43,7 @@ app.use("/tenant", tenantRouter);
 app.use("/user", userRouter);
 
 // global error handler
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-app.use((err: HttpError, req: Request, res: Response, next: NextFunction) => {
+app.use((err: HttpError, req: Request, res: Response) => {
     logger.error(err.message);
 
     if (err instanceof z.ZodError) {
