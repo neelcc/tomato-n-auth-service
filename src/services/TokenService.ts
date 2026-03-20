@@ -1,6 +1,4 @@
-import fs from "fs";
 import createHttpError from "http-errors";
-import path from "path";
 import jwt, { type JwtPayload } from "jsonwebtoken";
 import { Config } from "../config/index.js";
 import type { User } from "../entity/User.js";
@@ -11,11 +9,18 @@ export class TokenService {
     constructor(private refreshTokenRepository: Repository<RefreshToken>) {}
 
     generateAccessToken(payload: JwtPayload) {
-        let privateKey: Buffer;
+        let privateKey: string;
+
         try {
-            privateKey = fs.readFileSync(
-                path.join(process.cwd(), "/certs/private.pem"),
-            );
+            if (!Config.PRIVATE_KEY) {
+                const error = createHttpError(
+                    500,
+                    "Private key is not defined in environment variables",
+                );
+                throw error;
+            }
+
+            privateKey = Config.PRIVATE_KEY;
 
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
         } catch (err) {

@@ -36,10 +36,18 @@
         "strict": true,
         "strictPropertyInitialization": false,
         "isolatedModules": false,
-        "noUncheckedSideEffectImports": true,
         "moduleDetection": "force",
         "skipLibCheck": true,
         "emitDecoratorMetadata": true,
         "experimentalDecorators": true,
-    }
+    },
+    "exclude": [
+        "node_modules",
+        "dist",
+        "**/*.spec.ts",
+        "**/*.test.ts",
+        "**/tests/**",
+        "**/test/**",
+        "**/__tests__/**"
+    ]
 }

@@ -27,4 +27,5 @@ export const Config = {
         "REFRESH_TOKEN_SECRET",
     ),
     jwksUri: required(process.env.jwksUri, "jwksUri"),
+    PRIVATE_KEY: required(process.env.PRIVATE_KEY, "PRIVATE_KEY"),
 } as const;
